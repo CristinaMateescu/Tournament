@@ -1,0 +1,182 @@
+MATEESCU Cristina - 311CB
+1)EXPLICARE FUNCTII AUXILIARE
+	void eliberare(Sala* sala)
+	  VARIABILE:
+	    	nrMese 		- numarul de mese din sala
+		aux    		- masa care se elibereaza
+		curent 		- masa imediat urmatoare lui aux
+		       		- folosita pentru parcurgerea listei de mese
+		nrCrtJucatori 	- numarul de jucatori ai mesei de eliberat
+		santinela 	- prima celula a listei de jucatori 
+		auxj		- analogul lui aux, dar pentru jucatori
+				- jucatorul care se elibereaza
+		curentj		- analogul lui curent, pentru jucatori
+				- folosit la parcurgerea listei de jucatori
+	  SCOP: 
+		eliberarea salii
+	  PASI
+		1.Se parcurge lista de mese din sala, folosind "curent"
+		2.Pentru fiecare masa, se parcurge lista de jucatori
+		3.Se elibereaza jucatorii ( numele, campul info, celula )
+		4.Se elibereaza santinela
+		5.Se elibereaza masa ( numele, campul info, celula )
+		6.Se elibereaza sala (structura)
+
+	int InsFinJucator(TLista auxj,char numeMasa[],Sala sala,FILE* outp)
+	  VARIABILE:
+		p	- variabila cu care se cauta masa
+			- la pasul 3, se foloseste si pentru cautarea ultimei celule
+			  din lista de jucatori, unde se face inserarea
+	  SCOP:
+		Inserarea unui jucator la o masa data
+	  PASI:
+		1.Se cauta masa
+		2.Se verifica daca exista locuri la masa
+		3.Se cauta ultima celula din lista de jucatori ai mesei
+		  unde se insereaza jucatorul
+
+	TLista InsLG(void* ae, size_t d)
+	  SCOP:
+		Alocarea unei celule a unei liste generice
+		Functia este folosita pentru inserarea atat a meselor
+		cat si a jucatorilor in listele corespunzatoare
+	
+	Jucator alocjucator(char nume[],size_t size,int nrMaini)
+	  SCOP:
+		Alocarea unei structuri de tip Jucator
+		(campul info al unei celule din lista de jucatori)
+	  PASI:
+		1.Alocare memorie pentru structura de tip Jucator
+		  + verificari alocare
+		2.Alocare memorie pentru nume
+		3.Inserarea valorilor initiale
+	
+	Masa alocmasa(char nume[],size_t size,int nrMaxJucatori)
+	  SCOP :
+		Alocarea unei structuri de tip Masa
+		(campul info al unei celule din lista de jucatori)
+	  PASI :
+		1.Alocare memorie pentru structura de tip Masa
+		 +verificari alocare
+		2.Alocare memorie pentru numeMasa
+		3.Inserare valori initiale
+	
+	Sala citireS(FILE *conf,FILE* outp)
+	  SCOP :
+		Citirea datelor din fisierul de configuratii
+		Alocarea salii si initializarea datelor
+	  PASI :
+		1.Alocare memorie pentru structura de tip Sala
+		+verificari alocare
+		2.Initializare valori sala (nrMese, nrLocCrt, nrLocMax)
+		3.Creare lista de mese si initializare cu valori astfel:
+			Pentru fiecare masa se citesc numele, nrCrtJucatori, nrMaxJucatori
+			Se insereaza datele
+			Se aloca o structura de tip Masa (folosind functia alocmasa)
+			Se aloca o celula aux (folosind functia InsLG ), se seteaza campul info
+			Se insereaza celula in lista de mese
+			4.Se initializeaza lista de jucatori:
+			 Se creeaza santinela auxj si se seteaza ca inceputul listei
+			 Se insereaza pentru fiecare jucator datele astfel
+			   Se citesc numele, nrMaini
+			   Se aloca o structura de tip Jucator ( folosind alocjucator)
+			   Se aloca o celula auxj (folosind InsLg) si se seteaza campul info
+			   Se insereaza jucatorul la masa curenta folosind functia InsFinJucator
+
+	int eliminajucator_sau_masa(Sala sala, char masa[], char jucator[],FILE* outp)
+	   SCOP:
+		Eliminarea jucatorului daca numarul sau de maini este <= 0
+		Daca se elimina jucatorul, se verifica daca trebuie eliminata si masa
+	   PASI:
+		1.Folosind variabila p, se cauta masa data,
+		  prin parcurgerea listei de mese
+		  In variabila masa_curenta se retine masa gasita
+		  In variabila ant_masa se retine celula dinaintea mesei curente
+		2. Folosind variabila p, se cauta jucatorul care trebuie eliminat
+		  In variabila anterior retin celula dinaintea jucatorului de eliminat
+		3.Daca este indeplinita conditia de eliminare (nrMaini<=0)
+		  - se decrementeaza numarul curent de jucatori
+		  - se elimina din lista de jucatori
+		  - se elibereaza memoria alocata jucatorului (nume, structura, celula)
+		4.Dupa eliminarea jucatorului, verific daca trebuie eliminata masa
+		  (Daca santinela e singurul jucator al mesei)
+		  si daca da, o elimin astfel:
+		  - se decrementeaza nrLocMax, nrMese
+		  - Se elimina masa din lista (se refac legaturile)
+		  - Se elibereaza memoria alocata Mesei (nume, structura, celula)
+
+2)EXPLICARE FUNCTII EVENIMENTE
+	
+	void print(Sala sala,FILE *outp)
+		1.Parcurgere lista de mese cu pointerul p
+		  - afisare nume masa
+		2.Pentru fiecare masa, parcurgere lista jucatori cu pointerul j
+		  -afisare nume, nrMaini
+
+	int noroc_sau_ghinion ( Sala sala, FILE *outp,char masa[],
+				char jucator[],int valoare,char noroc_sau_ghinion[])
+		*Functia este folosita atat pentru noroc, cat si pentru ghinion
+		*In functie se face doar decrementarea/incrementarea numarului de maini
+		*Eventuala eliminare se face prin apelarea functiei eliminajucator_sau_masa, in main
+		1.Se cauta masa : se parcurge lista de mese cu pointerul p
+		2.Se cauta jucatorul, prin parcurgerea listei de jucatori
+		3.In functie de caz (noroc/ghinion) se face decrementare/incrementarea numarului de maini
+		
+	int tura(Sala sala,char masa[],FILE *outp)
+		1.Folosind variabila p, se cauta masa data,
+		  prin parcurgerea listei de mese
+		2.Se realizeaza rotatia prin mutarea primei celule (aux )la sfarsitul listei
+		3.Se parcurge lista de jucatori, pentru fiecare se decrementeaza numarul de maini
+		  Daca numarul de maini a ajuns 0 sau negativ, se elimina jucatorul, 
+		  folosind functia eliminajucator_sau_masa
+	
+	int inchide(Sala sala,char masa[],FILE *outp)
+		1.Folosind variabila p, se cauta masa data,
+		  prin parcurgerea listei de mese
+		2.Se verifica daca in sala exista suficiente locuri,
+		 adica daca numarul Maxim de locuri (fara numarul mesei de inchis)
+		 este mai mare sau egal cu numarul curent de locuri
+		3.Se parcurge lista de jucatori si pentru fiecare se cauta prima masa libera
+		4.Se insereaza jucatorul la masa libera gasita folosind functia InsFinJucator
+		5.Dupa ce am mutat toti jucatorii, se sterge masa
+		6.Se distruge masa 
+	
+	int clasament(Sala sala,char masa[],FILE *outp)
+		1.Folosind variabila p, se cauta masa data,
+		  prin parcurgerea listei de mese
+		2.Se parcurge lista de jucatori, pentru fiecare :
+			-se aloca o noua structura de tip Jucator
+			-si o noua celula, care va fi inserata in noua lista
+		3.Se face inserarea celulei in clasament astfel:
+			Caut prima celula cu numarul de maini mai mic sau egal cu numarul de maini al celulei de inserat, vreau sa inserez inaintea ei (retin si celula anterioara)
+			Daca au acelasi numar de maini, se va cauta o celula astfel incat sa se insereze inaintea ei, lexicografic
+		4.Se fac legaturile
+		5.Se afiseaza clasamentul, celula cu celula
+		6.Se elibereaza lista creata, celula cu celula
+
+
+3)MAIN
+	-Se deschid fisierele
+	-Se citesc datele din fisierul de configuratie, apeland citireS 
+	-Se citeste din fisierul de input, pana la finalul acestuia
+	   -pentru fiecare eveniment, se apeleaza functiile, cu cateva exceptii:
+		*pentru noroc/ghinion - se apeleaza functia eliminajucator_sau_masa, pentru a se verifica daca in urma apelului functiei ghinion sa nu ramana jucatori cu numarul de maini negativ sau 0 neeliminati
+		*pentru tura_completa - se apeleaza functia "tura" pentru toate mesele
+		
+	-Se elibereaza Sala apeland "eliberare"
+	-Se inchid fisierele
+
+*Punctaj obtinut pe teste, pe calculatorul propriu :
+		- checker local 105/85
+		- vmchecker 	105/85
+			  
+			  
+			  
+				
+
+
+
+
+
+
+			
